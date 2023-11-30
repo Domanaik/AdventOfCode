@@ -22,7 +22,7 @@ foreach ($year in @(2015..$date.Year))
         }
         if (!(Test-Path "$year\$day\sample.txt"))
         {
-            New-Item -ItemType File -Path "sample.txt"
+            New-Item -ItemType File -Path "$year\$day\sample.txt"
         }
         $parts = "part1", "part2"
         foreach ($part in $parts)
