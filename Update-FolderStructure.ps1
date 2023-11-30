@@ -17,22 +17,23 @@ foreach ($year in @(2015..$date.Year))
         {
             if ($year -lt $date.Year -or ($date.Month -eq 12 -and $day -le $date.Day))
             {
-                [System.IO.File]::WriteAllText("$year\$day\input.txt", ((Invoke-WebRequest -Uri "https://adventofcode.com/$year/day/$day/input" -WebSession $session).Content))
+                [System.IO.File]::AppendAllText("$year\$day\input.txt", ((Invoke-WebRequest -Uri "https://adventofcode.com/$year/day/$day/input" -WebSession $session).Content))
             }
         }
         if (!(Test-Path "$year\$day\sample.txt"))
         {
-            [System.IO.File]::WriteAllText("$year\$day\sample.txt",'')
+            [System.IO.File]::AppendAllText("$year\$day\sample.txt",'')
         }
         $parts = "part1", "part2"
         foreach ($part in $parts)
         {
             if (!(Test-Path "$year\$day\$part"))
             {
-                [System.IO.File]::WriteAllText("$year\$day\$part.ps1","# https://adventofcode.com/$year/day/$day")
-                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'')
-                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$input = Get-Content -Path "sample.txt"')
-                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'#$input = Get-Content -Path "input.txt"')
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1","# https://adventofcode.com/$year/day/$day" + [Environment]::NewLine)
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'' + [Environment]::NewLine)
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$sample = [System.IO.File]::ReadAllLines(sample.txt)' + [Environment]::NewLine)
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$input = [System.IO.File]::ReadAllLines(input.txt)' + [Environment]::NewLine)
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'' + [Environment]::NewLine)
             }
         }
     }
