@@ -31,8 +31,8 @@ foreach ($year in @(2015..$date.Year))
             {
                 [System.IO.File]::AppendAllText("$year\$day\$part.ps1","# https://adventofcode.com/$year/day/$day" + [Environment]::NewLine)
                 [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'' + [Environment]::NewLine)
-                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$sample = [System.IO.File]::ReadAllLines(sample.txt)' + [Environment]::NewLine)
-                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$input = [System.IO.File]::ReadAllLines(input.txt)' + [Environment]::NewLine)
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$sample = [System.IO.File]::ReadAllLines("sample.txt")' + [Environment]::NewLine)
+                [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'$input = [System.IO.File]::ReadAllLines("input.txt")' + [Environment]::NewLine)
                 [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'' + [Environment]::NewLine)
             }
         }
