@@ -29,10 +29,10 @@ foreach ($year in @(2015..$date.Year))
         {
             if (!(Test-Path "$year\$day\$part"))
             {
-                "# https://adventofcode.com/$year/day/$day" | Out-File -FilePath "$part.ps1"
-                '' | Out-File -FilePath "$part.ps1"
-                '$input = Get-Content -Path "sample.txt"' | Out-File -FilePath "$part.ps1"
-                '#$input = Get-Content -Path "input.txt"' | Out-File -FilePath "$part.ps1"
+                "# https://adventofcode.com/$year/day/$day" | Out-File -FilePath "$year\$day\$part.ps1"
+                '' | Out-File -FilePath "$year\$day\$part.ps1" -Append
+                '$input = Get-Content -Path "sample.txt"' | Out-File -FilePath "$year\$day\$part.ps1" -Append
+                '#$input = Get-Content -Path "input.txt"' | Out-File -FilePath "$year\$day\$part.ps1" -Append
             }
         }
     }
