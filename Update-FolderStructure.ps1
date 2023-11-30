@@ -17,7 +17,7 @@ foreach ($year in @(2015..$date.Year))
         {
             if ($year -lt $date.Year -or ($date.Month -eq 12 -and $day -le $date.Day))
             {
-                [System.IO.File]::WriteAllText("$year\$day\input.txt", ((Invoke-WebRequest -Uri "https://adventofcode.com/$year/day/$day/input" -WebSession $session).Content | Out-File -FilePath))
+                [System.IO.File]::WriteAllText("$year\$day\input.txt", ((Invoke-WebRequest -Uri "https://adventofcode.com/$year/day/$day/input" -WebSession $session).Content))
             }
         }
         if (!(Test-Path "$year\$day\sample.txt"))
