@@ -4,7 +4,7 @@
 $aoc_input = [System.IO.File]::ReadAllLines("2023\1\input.txt")
 $calibration_value = 0
 $regex = '\d|one|two|three|four|five|six|seven|eight|nine'
-function ParseDigit([string]$digit){
+function ParseDigit($digit){
     switch ($digit)
     {
         "one"{1}
