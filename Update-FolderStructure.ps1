@@ -27,7 +27,7 @@ foreach ($year in @(2015..$date.Year))
         $parts = "part1", "part2"
         foreach ($part in $parts)
         {
-            if (!(Test-Path "$year\$day\$part"))
+            if (!(Test-Path "$year\$day\$part.ps1"))
             {
                 [System.IO.File]::AppendAllText("$year\$day\$part.ps1","# https://adventofcode.com/$year/day/$day" + [Environment]::NewLine)
                 [System.IO.File]::AppendAllText("$year\$day\$part.ps1",'' + [Environment]::NewLine)
