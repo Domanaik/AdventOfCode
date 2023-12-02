@@ -19,18 +19,24 @@ foreach ($line in $aoc_input)
             $color = $color -split " "
             switch ($color[2])
             {
-                "red" { 
-                    if ([int]$color[1] -gt $red_cubes) {
+                "red"
+                { 
+                    if ([int]$color[1] -gt $red_cubes)
+                    {
                         $possible = $false
                     }
                 }
-                "green" { 
-                    if ([int]$color[1] -gt $green_cubes) {
+                "green"
+                { 
+                    if ([int]$color[1] -gt $green_cubes)
+                    {
                         $possible = $false
                     }
                 }
-                "blue" { 
-                    if ([int]$color[1] -gt $blue_cubes) {
+                "blue"
+                { 
+                    if ([int]$color[1] -gt $blue_cubes)
+                    {
                         $possible = $false
                     }
                 }
@@ -39,7 +45,7 @@ foreach ($line in $aoc_input)
     }
     if ($possible)
     {
-        $sum_games += ($parts[0] -split ' ','')[1]
+        $sum_games += ($parts[0] -split ' ', '')[1]
     }
 }
 $sum_games

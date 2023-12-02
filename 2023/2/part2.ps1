@@ -18,18 +18,24 @@ foreach ($line in $aoc_input)
             $color = $color -split " "
             switch ($color[2])
             {
-                "red" { 
-                    if ($red_cubes -lt [int]$color[1]) {
+                "red"
+                { 
+                    if ($red_cubes -lt [int]$color[1])
+                    {
                         $red_cubes = [int]$color[1]
                     }
                 }
-                "green" { 
-                    if ($green_cubes -lt [int]$color[1]) {
+                "green"
+                { 
+                    if ($green_cubes -lt [int]$color[1])
+                    {
                         $green_cubes = [int]$color[1]
                     }
                 }
-                "blue" { 
-                    if ($blue_cubes -lt [int]$color[1]) {
+                "blue"
+                { 
+                    if ($blue_cubes -lt [int]$color[1])
+                    {
                         $blue_cubes = [int]$color[1]
                     }
                 }

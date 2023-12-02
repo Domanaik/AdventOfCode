@@ -7,8 +7,8 @@ $regex = '\d'
 
 foreach ($line in $aoc_input)
 {
-    $firstDigit = [Regex]::Match($line,$regex).Value
-    $secondDigit = [Regex]::Match($line,$regex,[System.Text.RegularExpressions.RegexOptions]::RightToLeft).Value
-    $calibration_value += ($firstDigit*10+$secondDigit)
+    $firstDigit = [Regex]::Match($line, $regex).Value
+    $secondDigit = [Regex]::Match($line, $regex, [System.Text.RegularExpressions.RegexOptions]::RightToLeft).Value
+    $calibration_value += ($firstDigit * 10 + $secondDigit)
 }
 $calibration_value
