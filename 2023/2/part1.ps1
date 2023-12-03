@@ -8,43 +8,32 @@ $red_cubes = 12
 $green_cubes = 13
 $blue_cubes = 14
 
-foreach ($line in $aoc_input)
-{
+foreach ($line in $aoc_input) {
     $parts = $line -split ":" -split ";"
     $possible = $true
-    foreach ($reveal in ($parts | Select-Object -Skip 1))
-    {
-        foreach ($color in ($reveal -split ","))
-        {
+    foreach ($reveal in ($parts | Select-Object -Skip 1)) {
+        foreach ($color in ($reveal -split ",")) {
             $color = $color -split " "
-            switch ($color[2])
-            {
-                "red"
-                { 
-                    if ([int]$color[1] -gt $red_cubes)
-                    {
+            switch ($color[2]) {
+                "red" { 
+                    if ([int]$color[1] -gt $red_cubes) {
                         $possible = $false
                     }
                 }
-                "green"
-                { 
-                    if ([int]$color[1] -gt $green_cubes)
-                    {
+                "green" { 
+                    if ([int]$color[1] -gt $green_cubes) {
                         $possible = $false
                     }
                 }
-                "blue"
-                { 
-                    if ([int]$color[1] -gt $blue_cubes)
-                    {
+                "blue" { 
+                    if ([int]$color[1] -gt $blue_cubes) {
                         $possible = $false
                     }
                 }
             }
         }
     }
-    if ($possible)
-    {
+    if ($possible) {
         $sum_games += ($parts[0] -split ' ', '')[1]
     }
 }
