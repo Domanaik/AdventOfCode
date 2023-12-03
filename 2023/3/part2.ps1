@@ -12,10 +12,6 @@ function isDigit($string) {
 }
 
 for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
-    Write-Output "Durchgang $($i+1)"
-    if ($($i + 1) -eq 139) {
-        "check"
-    }
     $match = [regex]::Matches($aoc_sample[$i], '\*')
     foreach ($success in $match) {
         $indexStart = $success.Index
@@ -25,23 +21,15 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         $botright = ""
         $gears = @()
 
-        Write-Output "found * at index $indexStart in line $($i+1)"
-        #$aoc_sample[$i - 1][$indexStart - 1] , $aoc_sample[$i - 1][$indexStart], $aoc_sample[$i - 1][$indexStart + 1] -join ''
-        #$aoc_sample[$i][$indexStart - 1], "*", $aoc_sample[$i][$indexStart + 1] -join ''
-        #$aoc_sample[$i + 1][$indexStart - 1], $aoc_sample[$i + 1][$indexStart], $aoc_sample[$i + 1][$indexStart + 1] -join ''
-
-        # Left
         if (isDigit($aoc_sample[$i][$indexStart - 1])) {
             $left = ([regex]::Matches($aoc_sample[$i][0..($indexStart - 1)] -join '', '\d+$')).Value
             $gears += $left
         }
-        # Right
         if (isDigit($aoc_sample[$i][$indexStart + 1])) {
             $right = ([regex]::Matches($aoc_sample[$i][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value
             $gears += $right
         }
         
-        # Top
         if (isDigit($aoc_sample[$i - 1][$indexStart])) {
             if ((isDigit(([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value))) {
                 $start = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Index
@@ -54,12 +42,10 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
             }
         }
         else {
-            # Topleft
             if (isDigit($aoc_sample[$i - 1][$indexStart - 1])) {
                 $topleft = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value
                 $gears += $topleft
             }
-            # Topright
             if (isDigit($aoc_sample[$i - 1][$indexStart + 1])) {
                 $topright = ([regex]::Matches($aoc_sample[$i - 1][($indexStart + 1)..$aoc_sample.Length] -join '', '^\d+')).Value
                 $gears += $topright
