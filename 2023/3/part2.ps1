@@ -1,7 +1,9 @@
 # https://adventofcode.com/2023/day/3
 
+
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\3\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\3\input.txt")
+
 $sum_gearratios = 0
 
 function isDigit($string) {
@@ -31,16 +33,14 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         }
         
         if (isDigit($aoc_sample[$i - 1][$indexStart])) {
-            if ((isDigit(([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value)) -and (isDigit(([regex]::Matches($aoc_sample[$i - 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value))) {
-                $top = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart + 1)] -join '', '\d+$')).Value
-                $gears += $top
-            }
-            elseif (isDigit(([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value)) {
-                $topleft = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart)] -join '', '\d+$')).Value
+            if ((isDigit(([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value))) {
+                $start = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Index
+                $topleft = ([regex]::Matches($aoc_sample[$i - 1][$start..$aoc_sample[$i].Length] -join '', '^\d+')).Value
                 $gears += $topleft
             }
-            elseif (isDigit(([regex]::Matches($aoc_sample[$i - 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value)) {
-                $topright = ([regex]::Matches($aoc_sample[$i - 1][($indexStart)..$aoc_sample[$i].Length] -join '', '^\d+')).Value
+            else {
+                $topright = ([regex]::Matches($aoc_sample[$i - 1][$indexStart..$aoc_sample[$i].Length] -join '', '^\d+')).Value
+
                 $gears += $topright
             }
             else {
@@ -50,30 +50,21 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         }
         else {
             if (isDigit($aoc_sample[$i - 1][$indexStart - 1])) {
-                $topleft = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+')).Value
-                if ($topleft.Count -ne 1) {
-                    $topleft = $topleft[-1]
-                }
+                $topleft = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value
                 $gears += $topleft
             }
             if (isDigit($aoc_sample[$i - 1][$indexStart + 1])) {
-                $topright = ([regex]::Matches($aoc_sample[$i - 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '\d+')).Value
-                if ($topright.Count -ne 1) {
-                    $topright = $topright[0]
-                }
+                $topright = ([regex]::Matches($aoc_sample[$i - 1][($indexStart + 1)..$aoc_sample.Length] -join '', '^\d+')).Value
                 $gears += $topright
             }
         }
         if (isDigit($aoc_sample[$i + 1][$indexStart])) {
-            if ((isDigit(([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Value)) -and (isDigit(([regex]::Matches($aoc_sample[$i + 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value))) {
-                $bot = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart + 1)] -join '', '\d+$')).Value
-                $gears += $bot
-            }
-            elseif (isDigit(([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Value)) {
-                $botleft = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart)] -join '', '\d+$')).Value
+            if ((isDigit(([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Value))) {
+                $start = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Index
+                $botleft = ([regex]::Matches($aoc_sample[$i + 1][$start..$aoc_sample[$i].Length] -join '', '^\d+')).Value
                 $gears += $botleft
             }
-            elseif (isDigit(([regex]::Matches($aoc_sample[$i + 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value)) {
+            else {
                 $botright = ([regex]::Matches($aoc_sample[$i + 1][($indexStart)..$aoc_sample[$i].Length] -join '', '^\d+')).Value
                 $gears += $botright
             }
@@ -84,17 +75,11 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         }
         else {
             if (isDigit($aoc_sample[$i + 1][$indexStart - 1])) {
-                $botleft = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+')).Value
-                if ($botleft.Count -ne 1) {
-                    $botleft = $botleft[-1]
-                }
+                $botleft = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Value
                 $gears += $botleft
             }
             if (isDigit($aoc_sample[$i + 1][$indexStart + 1])) {
-                $botright = ([regex]::Matches($aoc_sample[$i + 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '\d+')).Value
-                if ($botright.Count -ne 1) {
-                    $botright = $botright[0]
-                }
+                $botright = ([regex]::Matches($aoc_sample[$i + 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value
                 $gears += $botright
             }
         }

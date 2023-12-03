@@ -1,7 +1,7 @@
 # https://adventofcode.com/2023/day/2
 
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\2\sample.txt")
-$aoc_input = [System.IO.File]::ReadAllLines("2023\2\input.txt")
+$aoc_input = [System.IO.File]::ReadAllLines("/Dokumente und Einstellungen/Kojofl/Documents/rust_projects/advent/domme/AdventOfCode/2023\2\input.txt")
 
 $sum_power = 0
 
