@@ -33,7 +33,6 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         }
         
         if (isDigit($aoc_sample[$i - 1][$indexStart])) {
-
             if ((isDigit(([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value))) {
                 $start = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Index
                 $topleft = ([regex]::Matches($aoc_sample[$i - 1][$start..$aoc_sample[$i].Length] -join '', '^\d+')).Value
@@ -51,25 +50,21 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         }
         else {
             if (isDigit($aoc_sample[$i - 1][$indexStart - 1])) {
-
                 $topleft = ([regex]::Matches($aoc_sample[$i - 1][0..($indexStart - 1)] -join '', '\d+$')).Value
                 $gears += $topleft
             }
             if (isDigit($aoc_sample[$i - 1][$indexStart + 1])) {
                 $topright = ([regex]::Matches($aoc_sample[$i - 1][($indexStart + 1)..$aoc_sample.Length] -join '', '^\d+')).Value
-
                 $gears += $topright
             }
         }
         if (isDigit($aoc_sample[$i + 1][$indexStart])) {
-
             if ((isDigit(([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Value))) {
                 $start = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Index
                 $botleft = ([regex]::Matches($aoc_sample[$i + 1][$start..$aoc_sample[$i].Length] -join '', '^\d+')).Value
                 $gears += $botleft
             }
             else {
-
                 $botright = ([regex]::Matches($aoc_sample[$i + 1][($indexStart)..$aoc_sample[$i].Length] -join '', '^\d+')).Value
                 $gears += $botright
             }
@@ -80,13 +75,11 @@ for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
         }
         else {
             if (isDigit($aoc_sample[$i + 1][$indexStart - 1])) {
-
                 $botleft = ([regex]::Matches($aoc_sample[$i + 1][0..($indexStart - 1)] -join '', '\d+$')).Value
                 $gears += $botleft
             }
             if (isDigit($aoc_sample[$i + 1][$indexStart + 1])) {
                 $botright = ([regex]::Matches($aoc_sample[$i + 1][($indexStart + 1)..$aoc_sample[$i].Length] -join '', '^\d+')).Value
-
                 $gears += $botright
             }
         }
