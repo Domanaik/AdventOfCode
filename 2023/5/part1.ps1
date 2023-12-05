@@ -45,13 +45,10 @@ function getSeedLocation($currentMap, [int64]$amount) {
     $nextMap = getNextMap($currentMap)
     if ($nextMap) {
         foreach ($i in $newmap["$currentMap-to-$nextMap"].Values) {
-            Write-Output "amount $amount, destinationrangestart $($i.destinationrangestart), sourcerangestart $($i.sourcerangestart), rangelength $($i.rangelength)"
+            $corresponds = $amount
             if ($amount -ge $i.sourcerangestart -and $amount -lt ($i.sourcerangestart + $i.rangelength)) {
-                $corresponds = $amount + $i.destinationrangestart - $i.sourcerangestart
+                $corresponds += $i.destinationrangestart - $i.sourcerangestart
                 break
-            }
-            else {
-                $corresponds = $amount
             }
         }
         getSeedLocation $nextMap $corresponds
