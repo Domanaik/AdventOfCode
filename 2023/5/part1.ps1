@@ -1,9 +1,9 @@
 # https://adventofcode.com/2023/day/4
 
-$aoc_sample = [System.IO.File]::ReadAllLines("2023\5\sample.txt")
+#$aoc_sample = [System.IO.File]::ReadAllLines("2023\5\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\5\input.txt")
 
-$seeds = [Regex]::Matches($aoc_sample[0], '\d+').Value
+$seeds = ([Regex]::Matches($aoc_sample[0], '\d+').Value)
 $newmap = @{}
 $map = ""
 $i = 0
@@ -14,16 +14,16 @@ foreach ($line in $aoc_sample | Select-Object -Skip 2) {
             $i = 0
             $newmap[$map] = @{}
             $newmap[$map][$i] = @{}
-            $newmap[$map][$i]["destinationrangestart"] = @{}
-            $newmap[$map][$i]["sourcerangestart"] = @{}
-            $newmap[$map][$i]["rangelength"] = @{}
+            [bigint]$newmap[$map][$i]["destinationrangestart"] = @{}
+            [bigint]$newmap[$map][$i]["sourcerangestart"] = @{}
+            [bigint]$newmap[$map][$i]["rangelength"] = @{}
         }
         else {
             $values = $line -split " "
             $newmap[$map][$i] = @{}
-            $newmap[$map][$i]["destinationrangestart"] = $values[0]
-            $newmap[$map][$i]["sourcerangestart"] = $values[1]
-            $newmap[$map][$i]["rangelength"] = $values[2]
+            [bigint]$newmap[$map][$i]["destinationrangestart"] = $values[0]
+            [bigint]$newmap[$map][$i]["sourcerangestart"] = $values[1]
+            [bigint]$newmap[$map][$i]["rangelength"] = $values[2]
             $i++
         }
     }
@@ -34,36 +34,26 @@ function getNextMap ($currentMap) {
     foreach ($key in $newmap.Keys) {
         if ($key -match "$currentMap-to-*") {
             $nextMap = ($key -split '-')[2]
+            return $nextMap
         }
     }
-    if ($nextMap) {
-        return $nextMap
-    }
-    else {
+    if (!$nextMap) {
         return $false
     }
 }
-
-function getSeedLocation($currentMap, $amount) {
-    
+function getSeedLocation($currentMap, [int64]$amount) {
     $nextMap = getNextMap($currentMap)
     if ($nextMap) {
-        $map = "$currentMap-to-$nextMap"
-        $mapped = @{}
-        foreach ($i in $newmap[$map].Values) {
-            for ($j = 0; $j -lt $i.rangelength; $j++) {
-                $mapped[[int]$i.sourcerangestart + $j] = @{}
-                $mapped[[int]$i.sourcerangestart + $j][$currentMap] = [int]$i.sourcerangestart + $j        
-                $mapped[[int]$i.sourcerangestart + $j][$nextMap] = [int]$i.destinationrangestart + $j
+        foreach ($i in $newmap["$currentMap-to-$nextMap"].Values) {
+            Write-Output "amount $amount, destinationrangestart $($i.destinationrangestart), sourcerangestart $($i.sourcerangestart), rangelength $($i.rangelength)"
+            if ($amount -ge $i.sourcerangestart -and $amount -lt ($i.sourcerangestart + $i.rangelength)) {
+                $corresponds = $amount + $i.destinationrangestart - $i.sourcerangestart
+                break
+            }
+            else {
+                $corresponds = $amount
             }
         }
-        if ($mapped.Contains([int]$amount)) {
-            $corresponds = $($mapped[[int]$amount][$nextMap])
-        }
-        else {
-            $corresponds = $amount
-        }        
-        Write-Output "$currentMap number $amount corresponds to $nextMap number $corresponds"
         getSeedLocation $nextMap $corresponds
     }
     else {
@@ -73,6 +63,6 @@ function getSeedLocation($currentMap, $amount) {
 
 $results = @()
 foreach ($seed in $seeds) {
-    $results += getSeedLocation "seed" $seed 
+    $results += getSeedLocation "seed" $seed
 }
 ($results | Measure-Object -Minimum).Minimum
