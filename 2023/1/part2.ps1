@@ -2,8 +2,7 @@
 
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\1\sample2.txt")
 $aoc_input = [System.IO.File]::ReadAllLines("2023\1\input.txt")
-$calibration_value = 0
-$regex = '\d|one|two|three|four|five|six|seven|eight|nine'
+
 function ParseDigit([string]$digit) {
     switch ($digit) {
         "one" { 1 }
@@ -19,6 +18,9 @@ function ParseDigit([string]$digit) {
     }
 }
 
+$regex = '\d|one|two|three|four|five|six|seven|eight|nine'
+
+$calibration_value = 0
 foreach ($line in $aoc_input) {
     [int]$firstDigit = ParseDigit([Regex]::Match($line, $regex).Value)
     [int]$secondDigit = ParseDigit([Regex]::Match($line, $regex, [System.Text.RegularExpressions.RegexOptions]::RightToLeft).Value)
