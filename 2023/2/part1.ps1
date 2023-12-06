@@ -3,11 +3,11 @@
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\2\sample.txt")
 $aoc_input = [System.IO.File]::ReadAllLines("2023\2\input.txt")
 
-$sum_games = 0
 $red_cubes = 12
 $green_cubes = 13
 $blue_cubes = 14
 
+$sum_games = 0
 foreach ($line in $aoc_input) {
     $parts = $line -split ":" -split ";"
     $possible = $true
@@ -34,7 +34,7 @@ foreach ($line in $aoc_input) {
         }
     }
     if ($possible) {
-        $sum_games += ($parts[0] -split ' ', '')[1]
+        $sum_games += [Regex]::Matches($parts[0], '\d+').Value
     }
 }
 $sum_games
