@@ -3,16 +3,15 @@
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\6\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\6\input.txt")
 
-[int[]]$times = ([Regex]::Matches($aoc_sample[0], '\d+').Value)
-[int[]]$distances = ([Regex]::Matches($aoc_sample[1], '\d+').Value)
+[int[]]$times = [Regex]::Matches($aoc_sample[0], '\d+').Value
+[int[]]$distances = [Regex]::Matches($aoc_sample[1], '\d+').Value
 
 $wins = 1
 for ($i = 0; $i -lt $times.Count; $i++) {
-    for ($j = 1; $j -lt $times[$i]; $j++) {
-        if (($times[$i] - $j) * $j -gt $distances[$i]) {
-            $wins *= $times[$i] - 2 * $j + 1
-            break
-        }
-    }
+    [int64]$p = - $times[$i]
+    [int64]$q = $distances[$i]
+    $x1 = [math]::Floor( - ($p / 2) - [math]::sqrt([math]::pow($p / 2, 2) - $q)) + 1
+    $x2 = [math]::Ceiling( - ($p / 2) + [math]::sqrt([math]::pow($p / 2, 2) - $q))    
+    $wins *= $x2 - $x1
 }
 $wins
