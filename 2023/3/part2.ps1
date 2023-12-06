@@ -2,7 +2,6 @@
 
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\3\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\3\input.txt")
-$sum_gearratios = 0
 
 function isDigit($string) {
     if ($string -match '^\d+$') {
@@ -11,6 +10,7 @@ function isDigit($string) {
     return $false
 }
 
+$sum_gearratios = 0
 for ($i = 0; $i -lt $aoc_sample.Length; $i++) {
     $match = [regex]::Matches($aoc_sample[$i], '\*')
     foreach ($success in $match) {

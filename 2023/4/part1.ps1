@@ -3,12 +3,11 @@
 #$aoc_sample = [System.IO.File]::ReadAllLines("2023\4\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\4\input.txt")
 
-$regex = '\d+'
 $totalpoints = 0
 foreach ($line in $aoc_sample) {
     $cards = $line -split ":" -split "\|"
-    $numbersyouhave = [Regex]::Matches($cards[1], $regex).Value
-    $winningnumbers = [Regex]::Matches($cards[2], $regex).Value
+    $numbersyouhave = [Regex]::Matches($cards[1], '\d+').Value
+    $winningnumbers = [Regex]::Matches($cards[2], '\d+').Value
     $points = 0
     foreach ($numberyouhave in $numbersyouhave) {
         if ($winningnumbers -contains $numberyouhave) {
