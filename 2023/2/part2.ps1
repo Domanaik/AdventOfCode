@@ -4,7 +4,6 @@
 $aoc_input = [System.IO.File]::ReadAllLines("2023\2\input.txt")
 
 $sum_power = 0
-
 foreach ($line in $aoc_input) {
     $red_cubes = 0
     $green_cubes = 0
