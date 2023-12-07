@@ -1,6 +1,6 @@
-# https://adventofcode.com/2023/day/7
+# https://adventofcode.com/2023/day/7#part2
 
-#$aoc_sample = [System.IO.File]::ReadAllLines("2023\7\sample.txt")
+$aoc_sample = [System.IO.File]::ReadAllLines("2023\7\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\7\input.txt")
 
 [regex]$regex = "^(\w{5})\s(\d+)$"
@@ -27,9 +27,11 @@ class HandType {
 
 class Hand {
     [Card[]]$Cards
+    [Card[]]$CardsWithoutJoker
     [int]$Bid
     [HandType]$HandType
     [int]$Value
+    [int]$ValueWithoutJoker
 
     [void]addCardToHand([Card]$cards) {
         $this.Cards += $cards
@@ -40,7 +42,26 @@ class Hand {
     [void]addHandType([HandType]$handType) {
         $this.HandType = $handType
     }
+    [void]replaceJoker() {
+        foreach ($card in $this.Cards) {
+            if ($card.Name -eq 'J') {
+                $highestValueCard = $this.Cards.Name | Sort-Object | Group-Object | Where-Object Name -NE "J" | Select-Object -Property *, @{Name = 'Value'; Expression = { $name = $_.Name; (@($cards).where({ $_.Name -eq $name })).Value } } | Sort-Object Count, Value | Select-Object -Last 1
+                $valueCard = [Card]::new()
+                [void]$valueCard.addCard($highestValueCard.Name, $highestValueCard.Value)
+                $this.CardsWithoutJoker += $valueCard
+            }
+            else {
+                $this.CardsWithoutJoker += $card
+            }
+        }
+    }
     [void]addValue() {
+        $hex = '0x'
+        for ($i = 0; $i -lt $this.CardsWithoutJoker.Length; $i++) {
+            $hex += '{0:X}' -f $this.CardsWithoutJoker[$i].Value
+        }
+        $this.ValueWithoutJoker = [int]$hex
+
         $hex = '0x'
         for ($i = 0; $i -lt $this.Cards.Length; $i++) {
             $hex += '{0:X}' -f $this.Cards[$i].Value
@@ -48,10 +69,10 @@ class Hand {
         $this.Value = [int]$hex
     }
     [Array]getCardsSortedByRank() {
-        return $this.Cards.Value | Sort-Object
+        return $this.CardsWithoutJoker.Value | Sort-Object
     }
     [bool]isFiveOfAKind() {
-        $handValues = $this.Cards.Value | Measure-Object -Minimum -Maximum
+        $handValues = $this.CardsWithoutJoker.Value | Measure-Object -Minimum -Maximum
         if ($handValues.Minimum -eq $handValues.Maximum) {
             return $true
         }
@@ -98,7 +119,7 @@ class Hand {
 }
 
 $cards = New-Object Collections.Generic.List[Card]
-$cardnames = "A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"
+$cardnames = "A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"
 for ($i = 0; $i -lt $cardnames.Count; $i++) {
     $card = [Card]::new()
     $card.addCard($cardnames[$i], $cardnames.Count - $i)
@@ -142,8 +163,10 @@ foreach ($line in $aoc_sample) {
     $match = $regex.Match($line)
     $hand = [Hand]::new()
     foreach ($singlecard in [char[]]$match.Groups[1].Value) {
+        #
         $hand.addCardToHand(($cards | Where-Object Name -EQ $singlecard))
     }
+    $hand.replaceJoker()
     $hand.addBid($match.Groups[2].Value)
     $hand.addValue()
     Measure-HandType($hand)
@@ -153,6 +176,7 @@ foreach ($line in $aoc_sample) {
 $totalwinnings = 0
 $i = 1
 foreach ($result in ($hands | Sort-Object { $_.HandType.Value }, Value)) {
+    "$($result.CardsWithoutJoker.Name) | Primary $($result.HandType.Value) ($($result.HandType.Name)), Secondary $($result.Value) | $totalwinnings + $i * $($result.Bid) => $($totalwinnings + $result.Bid * $i)"
     $totalwinnings += $result.Bid * $i++
 }
 $totalwinnings
