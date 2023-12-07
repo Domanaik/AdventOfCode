@@ -150,8 +150,10 @@ foreach ($line in $aoc_sample) {
     [void]$hands.Add($hand)
 }
 
-[int64]$totalwinings = 0
-for ($i = 0; $i -lt $hands.Count; $i++) {
-    $totalwinings += ($hands | Sort-Object { $_.HandType.Value, $_.Value })[$i].Bid * ($i + 1)
+$totalwinnings = 0
+$i = 1
+foreach ($result in ($hands | Sort-Object { $_.HandType.Value, $_.Value })) {
+    "$($result.Cards.Name) | $totalwinnings + $i * $($result.Bid) => $($totalwinnings + $result.Bid * $i)"
+    $totalwinnings += $result.Bid * $i++
 }
-$totalwinings
+$totalwinnings
