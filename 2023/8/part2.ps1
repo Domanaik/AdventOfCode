@@ -14,27 +14,40 @@ for ($i = 0; $i -lt ($aoc_sample.Length - 2); $i++) {
     $instructions[$match.Groups[1].Value]["R"] = $match.Groups[3].Value
 }
 
-$current = @{}
+$currents = @{}
 foreach ($possibleStart in $instructions.Keys) {
     if ($possibleStart.EndsWith("A")) {
-        $current.Add($possibleStart, $instructions[$possibleStart])
+        $currents.Add($possibleStart, $instructions[$possibleStart])
     }
 }
+$allSteps = @()
+foreach ($one in $currents.Keys) {
+    $i = 0
+    $steps = 0
+    do {
+        $steps++
+        $direction = $instruction.ToCharArray()[$i].ToString()
+        $one = $instructions[$one][$direction]
+        if (++$i -ge $instruction.Length) { $i = 0 }
+    } while (($one.EndsWith("Z") -eq $false))
+    $allSteps += $steps
+}
 
-$i = 0
-$steps = 0
-do {
-    $steps++
-    $nextRun = @{}
-    foreach ($start in $current.Keys) {
-        #"run $steps, $start, left $($current[$start]["L"]), right $($current[$start]["R"])"
-        $nextRun.Add($instructions[$start][($instruction.ToCharArray()[$i].ToString())], $instructions[$instructions[$start][($instruction.ToCharArray()[$i].ToString())]])
+function ggT([int64]$a, [int64]$b) {
+    while ($b -ne 0) {
+        $tmp = $b
+        $b = $a % $b
+        $a = $tmp
     }
-    $current = $nextRun
-    $allEndWithZ = $true
-    foreach ($end in $current.Keys) {
-        if (!($end.EndsWith("Z"))) { $allEndWithZ = $false }
-    } 
-    if (++$i -ge $instruction.Length) { $i = 0 }
-} while ($allEndWithZ -eq $false)
-$steps
+    return $a
+}
+
+function kgV([int64]$a, [int64]$b) {
+    return ($a / (ggt $a $b) * $b)
+}
+
+$result = 1
+for ($i = 0; $i -lt $allSteps.Length; $i++) {
+    $result = kgV $allSteps[$i] $result
+}
+$result
