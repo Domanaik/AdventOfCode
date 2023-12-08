@@ -1,5 +1,5 @@
 # https://adventofcode.com/2023/day/5
-# Credits an Nulz <3
+# Credits an Nulz <3 [https://github.com/maxi99manuel99]
 
 using namespace System.Collections.Generic
 
