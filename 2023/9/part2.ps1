@@ -1,8 +1,8 @@
-# https://adventofcode.com/2023/day/9
+# https://adventofcode.com/2023/day/9#part2
 
 using namespace System.Collections.Generic
 
-#$aoc_sample = [System.IO.File]::ReadAllLines("2023\9\sample.txt")
+$aoc_sample = [System.IO.File]::ReadAllLines("2023\9\sample.txt")
 $aoc_sample = [System.IO.File]::ReadAllLines("2023\9\input.txt")
 
 class Sequence {
@@ -35,7 +35,8 @@ class Sequence {
             }
             $sequence.addList($newList)
             $sequence.getNextSequence()
-            $this.List.Add($this.List[-1] + $sequence.List[-1])
+            $this.List = , ($this.List[0] - $sequence.List[0]) + $this.List
+            #$this.List.Add($this.List[0] - $sequence.List[0])
             Write-Host $this.List
         }
     }
@@ -46,7 +47,7 @@ foreach ($line in $aoc_sample) {
     $sequence = [Sequence]::new()
     $sequence.addList([Regex]::Matches($line, '-?\d+').Value)
     $sequence.getNextSequence()
-    $sum += $sequence.List[-1]
+    $sum += $sequence.List[0]
     ""
     #pause
     ""
