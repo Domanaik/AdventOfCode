@@ -22,10 +22,8 @@ class Sequence {
     }
 
     [void]getNextSequence() {
-        Write-Host $this.List
         if ($this.isAllZeroes()) {
             $this.List.Add(0)
-            Write-Host $this.List
         }
         else {
             $sequence = [Sequence]::new()
@@ -36,8 +34,6 @@ class Sequence {
             $sequence.addList($newList)
             $sequence.getNextSequence()
             $this.List = , ($this.List[0] - $sequence.List[0]) + $this.List
-            #$this.List.Add($this.List[0] - $sequence.List[0])
-            Write-Host $this.List
         }
     }
 }
@@ -48,8 +44,5 @@ foreach ($line in $aoc_sample) {
     $sequence.addList([Regex]::Matches($line, '-?\d+').Value)
     $sequence.getNextSequence()
     $sum += $sequence.List[0]
-    ""
-    #pause
-    ""
 }
 $sum
