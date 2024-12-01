@@ -52,9 +52,7 @@ jobs:
               echo "No executable found for project: $PROJECT"
               continue
             fi
-            
-            echo "Running benchmark for $EXE_PATH"
-            
+                        
             # Run benchmark with hyperfine
             hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md"
 
@@ -65,7 +63,7 @@ jobs:
               ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
               curl -H "Content-Type: application/json" \
                   -X POST \
-                  -d "{\"content\": $ESCAPED_CONTENT}" \
+                  -d "{\"content\": "??"}" \
                   "${{ secrets.DISCORD_WEBHOOK_URL }}"
             fi
           done
