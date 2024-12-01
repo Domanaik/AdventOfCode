@@ -60,8 +60,8 @@ jobs:
               continue
             fi
                         
-            RESULT=$(hyperfine "$EXE_PATH" --warmup 10)
-            echo "hyperfine_result=$RESULT" >> $GITHUB_OUTPUT
+            HYPERFINE_RESULT=$(hyperfine "$EXE_PATH" --warmup 10)
+            echo "hyperfine_result=$HYPERFINE_RESULT" >> $GITHUB_OUTPUT
           done
 
       - name: Discord notification
@@ -69,4 +69,4 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          echo "${{ steps.detect-changes.outputs.changed_projects }}"
+          echo "${{ steps.benchmark.outputs.hyperfine_result }}"
