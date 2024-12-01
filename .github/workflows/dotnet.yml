@@ -49,8 +49,9 @@ jobs:
             dotnet build --configuration Release "$PROJECT"
           done
 
-      - name: Run benchmark using hyperfile
-        id: benchmark
+      - name: Run benchmark using hyperfile and send output to discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
@@ -61,13 +62,8 @@ jobs:
             fi
                         
             hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/hyperfine.md"
-          done
 
-      - name: Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          if [ -f "$PROJECT/hyperfine.md" ]; then
+             if [ -f "$PROJECT/hyperfine.md" ]; then
             CONTENT=$(cat "$PROJECT/hyperfine.md")
             ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
             
@@ -77,3 +73,4 @@ jobs:
                  -d "{\"content\": $ESCAPED_CONTENT}" \
                  "${{ secrets.DISCORD_WEBHOOK_URL }}"
           fi
+          done
