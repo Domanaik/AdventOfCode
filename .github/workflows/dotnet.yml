@@ -9,13 +9,12 @@ on:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout the repository with full history
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Cache hyperfine
         uses: actions/cache@v4
         with:
@@ -30,7 +29,6 @@ jobs:
             cargo install hyperfine
           fi
 
-      # Detect changed projects
       - name: Get changed projects
         id: detect-changes
         run: |
@@ -38,31 +36,29 @@ jobs:
           CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
           echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
 
-      # Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0
 
-      # Run benchmarks
-      - name: Run performance benchmark
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - name: Build project
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            echo "Benchmarking $PROJECT"
             dotnet restore "$PROJECT"
             dotnet build --configuration Release "$PROJECT"
-            
-            # Find the output executable
+          done
+
+      - name: Run benchmark using hyperfile
+        if: steps.detect-changes.outputs.changed_projects != ''
+        run: |
+          for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
             EXE_PATH=$(find "$PROJECT/bin/Release/net9.0/" -type f -executable | head -n 1)
             if [ -z "$EXE_PATH" ]; then
               echo "No executable found for project: $PROJECT"
               continue
             fi
                         
-            # Run benchmark with hyperfine
             hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md"
           done
 
@@ -75,6 +71,7 @@ jobs:
             echo "$CONTENT"
             ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
             curl -H "Content-Type: application/json" \
-              -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+              -X POST \
               -d "{\"content\": $ESCAPED_CONTENT}" \
+              "${{ secrets.DISCORD_WEBHOOK_URL }}" 
           fi
