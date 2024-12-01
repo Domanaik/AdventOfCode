@@ -15,10 +15,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache .NET SDK
+      - name: Cache .NET
         uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-dotnet-sdk-${{ hashFiles('**/*.csproj') }}
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
           path: |
             ~/.dotnet
             ~/.nuget
@@ -31,12 +31,10 @@ jobs:
       - name: Cache hyperfine
         uses: actions/cache@v4
         with:
+          key: ${{ runner.os }}-hyperfine-${{ hashFiles('**/*.csproj') }}
           path: ~/.cargo/bin
-          key: ${{ runner.os }}-hyperfine
-          restore-keys: |
-            ${{ runner.os }}-hyperfine-
 
-      - name: Install hyperfine (if not cached)
+      - name: Setup hyperfine
         run: |
           if [ ! -f ~/.cargo/bin/hyperfine ]; then
             cargo install hyperfine
