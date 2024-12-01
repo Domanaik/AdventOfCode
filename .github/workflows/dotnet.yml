@@ -19,8 +19,24 @@ jobs:
       - name: Get changed projects
         id: detect-changes
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} HEAD)
-          CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]{1,2}/' | cut -d'/' -f1,2 | uniq)
+          # Fallback to HEAD^ if github.event.before is invalid
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ] || [ -z "${{ github.event.before }}" ]; then
+            BEFORE="HEAD^"
+          else
+            BEFORE="${{ github.event.before }}"
+          fi
+
+          # Get changed files and extract top-level folders
+          CHANGED_FILES=$(git diff --name-only "$BEFORE" HEAD)
+          CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
+
+          # Debug output
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          echo "Changed projects:"
+          echo "$CHANGED_PROJECTS"
+
+          # Export projects
           echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
 
       # Setup .NET SDK
