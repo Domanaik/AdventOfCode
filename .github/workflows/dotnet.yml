@@ -49,9 +49,8 @@ jobs:
             dotnet build --configuration Release "$PROJECT"
           done
 
-      - name: Run benchmark using hyperfile and send output to discord
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - name: Run benchmark using hyperfine
+        id: benchmark
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
@@ -60,18 +59,26 @@ jobs:
               echo "No executable found for project: $PROJECT"
               continue
             fi
-                        
-            hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/hyperfine.md"
-
-             if [ -f "$PROJECT/hyperfine.md" ]; then
-            output=$(cat "$PROJECT/hyperfine.md")
-            escaped_output=$(echo "$output" | sed ':a;N;$!ba;s/\n/\\n/g')
-            message="{\"content\": \"Benchmark results for **$project**:\n\`\`\`\n$escaped_output\n\`\`\`\"}"
             
-            # Add sender field to payload (customized for your webhook)
-            curl -H "Content-Type: application/json" \
-                 -X POST \
-                 -d "$message" \
-                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          fi
+            output=$(hyperfine --warmup 10 "$EXE_PATH")
+            echo "$output" > "$PROJECT/hyperfine_output.txt"
+          done
+
+      - name: Send benchmark results to Discord
+        if: steps.detect-changes.outputs.changed_projects != ''
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
+            if [ -f "$PROJECT/hyperfine_output.txt" ]; then
+              output=$(cat "$PROJECT/hyperfine_output.txt")
+              escaped_output=$(echo "$output" | sed ':a;N;$!ba;s/\n/\\n/g')
+              message="{\"content\": \"Benchmark results for **$PROJECT**:\n\`\`\`\n$escaped_output\n\`\`\`\"}"
+              
+              # Send the result to Discord
+              curl -H "Content-Type: application/json" \
+                   -X POST \
+                   -d "$message" \
+                   "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            fi
           done
