@@ -8,7 +8,7 @@ class Program
     {
         try
         {
-            string[] lines = File.ReadAllLines("input.txt");
+            string[] lines = File.ReadAllLines("D:\\GitHub\\AdventOfCode\\2024\\1\\input.txt");
             int[] left = lines.Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[0])).ToArray();
             int[] right = lines.Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[1])).ToArray();
             Array.Sort(left);
