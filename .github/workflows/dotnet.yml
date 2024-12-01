@@ -15,6 +15,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache .NET SDK
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-dotnet-sdk-${{ hashFiles('**/*.csproj') }}
+          path: |
+            ~/.dotnet
+            ~/.nuget
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0
+
       - name: Cache hyperfine
         uses: actions/cache@v4
         with:
@@ -35,11 +48,6 @@ jobs:
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} HEAD)
           CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
           echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0
 
       - name: Build project
         if: steps.detect-changes.outputs.changed_projects != ''
