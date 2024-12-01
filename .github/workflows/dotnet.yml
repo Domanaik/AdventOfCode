@@ -64,13 +64,14 @@ jobs:
             hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/hyperfine.md"
 
              if [ -f "$PROJECT/hyperfine.md" ]; then
-            CONTENT=$(cat "$PROJECT/hyperfine.md")
-            ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
+            output=$(cat "$PROJECT/hyperfine.md")
+            escaped_output=$(echo "$output" | sed ':a;N;$!ba;s/\n/\\n/g')
+            message="{\"content\": \"Benchmark results for **$project**:\n\`\`\`\n$escaped_output\n\`\`\`\"}"
             
             # Add sender field to payload (customized for your webhook)
             curl -H "Content-Type: application/json" \
                  -X POST \
-                 -d "{\"content\": $ESCAPED_CONTENT}" \
+                 -d "$message" \
                  "${{ secrets.DISCORD_WEBHOOK_URL }}"
           fi
           done
