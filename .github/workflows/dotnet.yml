@@ -1,26 +1,58 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: Performance Benchmark
 
 on:
   push:
-    branches: [ "main" ]
-    
-jobs:
-  build:
+    branches:
+      - main
+  pull_request:
 
+jobs:
+  benchmark:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Detect changed projects
+      - name: Get changed projects
+        id: detect-changes
+        run: |
+          # Suche nach geänderten Dateien
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+
+          # Filtere nach Projekten in Unterordnern (z.B., Jahr/Tag)
+          CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]{1,2}/' | cut -d'/' -f1,2 | uniq)
+
+          # Speichere die Projekte in einer Umgebungsvariable
+          echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_ENV
+
+      # Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0 # Ändere dies auf deine benötigte .NET-Version
+
+      # Benchmark each changed project
+      - name: Run performance benchmark
+        if: env.changed_projects != ''
+        run: |
+          for PROJECT in $CHANGED_PROJECTS; do
+            echo "Benchmarking $PROJECT"
+            dotnet restore $PROJECT
+            dotnet build --configuration Release $PROJECT
+
+            hyperfine "$PROJECT/bin/Release/net9.0/$PROJECT" --warmup 10 --export-markdown $PROJECT/benchmark_results.md
+
+            # Sende die Ergebnisse an Discord
+            if [ -f $PROJECT/benchmark_results.md ]; then
+              curl -H "Content-Type: application/json" \
+                   -X POST \
+                   -d "{\"content\": \"\`\`\`markdown\n$(cat $PROJECT/benchmark_results.md)\n\`\`\`\"}" \
+                   "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            fi
+          done
+        env:
+          CHANGED_PROJECTS: ${{ env.changed_projects }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
