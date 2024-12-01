@@ -46,6 +46,8 @@ jobs:
 
       # Run benchmarks
       - name: Run performance benchmark
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
@@ -61,14 +63,18 @@ jobs:
             fi
                         
             # Run benchmark with hyperfine
-            CONTENT=$(hyperfine "$EXE_PATH" --warmup 10)
-            escaped_output=$(echo "$CONTENT" | sed ':a;N;$!ba;s/\n/\\n/g')
-            message="{\"content\": \"Benchmark results for **$project**:\n\`\`\`\n$escaped_output\n\`\`\`\"}"
-            
-            curl -H "Content-Type: application/json" \
-                -X POST \
-                -d "$message" \
-                "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md"
           done
+
+      - name: Discord notification
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -f "$PROJECT/benchmark_results.md" ]; then
+            CONTENT=$(cat "$PROJECT/benchmark_results.md")
+            echo "$CONTENT"
+            ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
+            curl -H "Content-Type: application/json" \
+              -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+              -d "{\"content\": $ESCAPED_CONTENT}" \
+          fi
