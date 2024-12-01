@@ -19,14 +19,9 @@ jobs:
       - name: Get changed projects
         id: detect-changes
         run: |
-          # Suche nach geänderten Dateien
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} HEAD)
-
-          # Filtere nach Projekten in Unterordnern (z.B., Jahr/Tag)
-          CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]{1,2}/' | cut -d'/' -f1,2 | uniq)
-
-          # Speichere die Projekte in einer Umgebungsvariable
-          echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_ENV
+          CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E 'day_[0-9]+' | awk -F/ '{print $1}')
+          echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
 
       # Setup .NET SDK
       - name: Setup .NET
