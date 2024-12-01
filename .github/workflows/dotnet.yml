@@ -56,15 +56,17 @@ jobs:
             echo "Running benchmark for $EXE_PATH"
             
             # Run benchmark with hyperfine
-            RESULT=$(hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md")
+            hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md"
 
             # Send benchmark results to Discord
             if [ -f "$PROJECT/benchmark_results.md" ]; then
               CONTENT=$(cat "$PROJECT/benchmark_results.md")
+              # Escape special characters in JSON
+              ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
               curl -H "Content-Type: application/json" \
-                   -X POST \
-                   -d "{\"content\": \"\`\`\`markdown\n$CONTENT\n\`\`\`\"}" \
-                   "${{ secrets.DISCORD_WEBHOOK_URL }}"
+                  -X POST \
+                  -d "{\"content\": $ESCAPED_CONTENT}" \
+                  "${{ secrets.DISCORD_WEBHOOK_URL }}"
             fi
           done
         env:
