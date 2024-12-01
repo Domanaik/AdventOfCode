@@ -16,6 +16,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Cache hyperfine
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-hyperfine
+          restore-keys: |
+            ${{ runner.os }}-hyperfine-
+
+      - name: Install hyperfine (if not cached)
+        run: |
+          if [ ! -f ~/.cargo/bin/hyperfine ]; then
+            cargo install hyperfine
+          fi
 
       # Detect changed projects
       - name: Get changed projects
@@ -24,12 +37,6 @@ jobs:
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} HEAD)
           CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
           echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
-
-      # Install hyperfine
-      - name: Install hyperfine
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y hyperfine
 
       # Setup .NET SDK
       - name: Setup .NET
@@ -54,18 +61,14 @@ jobs:
             fi
                         
             # Run benchmark with hyperfine
-            hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md"
-
-            # Send benchmark results to Discord
-            if [ -f "$PROJECT/benchmark_results.md" ]; then
-              CONTENT=$(cat "$PROJECT/benchmark_results.md")
-              # Escape special characters in JSON
-              ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
-              curl -H "Content-Type: application/json" \
-                  -X POST \
-                  -d "{\"content\": "??"}" \
-                  "${{ secrets.DISCORD_WEBHOOK_URL }}"
-            fi
+            CONTENT=$(hyperfine "$EXE_PATH" --warmup 10)
+            escaped_output=$(echo "$CONTENT" | sed ':a;N;$!ba;s/\n/\\n/g')
+            message="{\"content\": \"Benchmark results for **$project**:\n\`\`\`\n$escaped_output\n\`\`\`\"}"
+            
+            curl -H "Content-Type: application/json" \
+                -X POST \
+                -d "$message" \
+                "${{ secrets.DISCORD_WEBHOOK_URL }}"
           done
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
