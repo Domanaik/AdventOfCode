@@ -50,6 +50,7 @@ jobs:
           done
 
       - name: Run benchmark using hyperfile
+        id: benchmark
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
@@ -59,19 +60,13 @@ jobs:
               continue
             fi
                         
-            hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/benchmark_results.md"
+            RESULT=$(hyperfine "$EXE_PATH" --warmup 10)
+            echo "hyperfine_result=$RESULT" >> $GITHUB_OUTPUT
           done
 
       - name: Discord notification
+        if: steps.benchmark.outputs.hyperfine_result != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          if [ -f "$PROJECT/benchmark_results.md" ]; then
-            CONTENT=$(cat "$PROJECT/benchmark_results.md")
-            echo "$CONTENT"
-            ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
-            curl -H "Content-Type: application/json" \
-              -X POST \
-              -d "{\"content\": $ESCAPED_CONTENT}" \
-              "${{ secrets.DISCORD_WEBHOOK_URL }}" 
-          fi
+          echo "${{ steps.detect-changes.outputs.changed_projects }}"
