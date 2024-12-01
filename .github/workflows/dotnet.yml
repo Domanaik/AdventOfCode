@@ -11,68 +11,69 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository with full history
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      # Checkout the repository with full history
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    # Detect changed projects
-    - name: Get changed projects
-      id: detect-changes
-      run: |
-        # Determine the commit to compare against
-        if [ -z "${{ github.event.before }}" ] || ! git cat-file -e "${{ github.event.before }}"; then
-          COMPARE_COMMIT="HEAD~1"
-        else
-          COMPARE_COMMIT="${{ github.event.before }}"
-        fi
-
-        echo "Comparing against commit: $COMPARE_COMMIT"
-
-        # Get changed files and extract top-level folders
-        CHANGED_FILES=$(git diff --name-only "$COMPARE_COMMIT" HEAD)
-        CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
-
-        # Debug output
-        echo "Changed files:"
-        echo "$CHANGED_FILES"
-        echo "Changed projects:"
-        echo "$CHANGED_PROJECTS"
-
-        # Export changed projects
-        echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
-
-    # Debugging step to verify output
-    - name: Debug changed projects
-      run: echo "Changed projects: ${{ steps.detect-changes.outputs.changed_projects }}"
-
-    # Setup .NET SDK
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0
-
-    # Run benchmarks
-    - name: Run performance benchmark
-      if: steps.detect-changes.outputs.changed_projects != ''
-      run: |
-        for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-          echo "Benchmarking $PROJECT"
-          dotnet restore "$PROJECT"
-          dotnet build --configuration Release "$PROJECT"
-          
-          # Run benchmark with hyperfine
-          RESULT=$(hyperfine "$PROJECT/bin/Release/net9.0/$(basename $PROJECT)" --warmup 3 --export-markdown "$PROJECT/benchmark_results.md")
-
-          # Send benchmark results to Discord
-          if [ -f "$PROJECT/benchmark_results.md" ]; then
-            CONTENT=$(cat "$PROJECT/benchmark_results.md")
-            curl -H "Content-Type: application/json" \
-                 -X POST \
-                 -d "{\"content\": \"\`\`\`markdown\n$CONTENT\n\`\`\`\"}" \
-                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+      # Detect changed projects
+      - name: Get changed projects
+        id: detect-changes
+        run: |
+          # Determine the commit to compare against
+          if [ -z "${{ github.event.before }}" ] || ! git cat-file -e "${{ github.event.before }}"; then
+            COMPARE_COMMIT="HEAD~1"
+          else
+            COMPARE_COMMIT="${{ github.event.before }}"
           fi
-        done
-      env:
-        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+          echo "Comparing against commit: $COMPARE_COMMIT"
+
+          # Get changed files and extract top-level folders
+          CHANGED_FILES=$(git diff --name-only "$COMPARE_COMMIT" HEAD)
+          CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
+
+          # Debug output
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          echo "Changed projects:"
+          echo "$CHANGED_PROJECTS"
+
+          # Export changed projects
+          echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
+
+      # Debugging step to verify output
+      - name: Debug changed projects
+        run: |
+          echo "Changed projects: ${{ steps.detect-changes.outputs.changed_projects }}"
+
+      # Setup .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0
+
+      # Run benchmarks
+      - name: Run performance benchmark
+        if: steps.detect-changes.outputs.changed_projects != ''
+        run: |
+          for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
+            echo "Benchmarking $PROJECT"
+            dotnet restore "$PROJECT"
+            dotnet build --configuration Release "$PROJECT"
+            
+            # Run benchmark with hyperfine
+            RESULT=$(hyperfine "$PROJECT/bin/Release/net9.0/$(basename $PROJECT)" --warmup 3 --export-markdown "$PROJECT/benchmark_results.md")
+
+            # Send benchmark results to Discord
+            if [ -f "$PROJECT/benchmark_results.md" ]; then
+              CONTENT=$(cat "$PROJECT/benchmark_results.md")
+              curl -H "Content-Type: application/json" \
+                   -X POST \
+                   -d "{\"content\": \"\`\`\`markdown\n$CONTENT\n\`\`\`\"}" \
+                   "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            fi
+          done
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
