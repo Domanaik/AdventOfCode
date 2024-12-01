@@ -60,13 +60,20 @@ jobs:
               continue
             fi
                         
-            HYPERFINE_RESULT=$(hyperfine "$EXE_PATH" --warmup 10)
-            echo "hyperfine_result=$HYPERFINE_RESULT" >> $GITHUB_OUTPUT
+            hyperfine "$EXE_PATH" --warmup 10 --export-markdown "$PROJECT/hyperfine.md"
           done
 
       - name: Discord notification
-        if: steps.benchmark.outputs.hyperfine_result != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          echo "${{ steps.benchmark.outputs.hyperfine_result }}"
+          if [ -f "$PROJECT/hyperfine.md" ]; then
+            CONTENT=$(cat "$PROJECT/hyperfine.md")
+            ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
+            
+            # Add sender field to payload (customized for your webhook)
+            curl -H "Content-Type: application/json" \
+                 -X POST \
+                 -d "{\"content\": $ESCAPED_CONTENT}" \
+                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          fi
