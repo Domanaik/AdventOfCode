@@ -47,7 +47,7 @@ jobs:
           CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
           echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
 
-      - name: Build project
+      - name: Build changed projects
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
@@ -55,8 +55,7 @@ jobs:
             dotnet build --configuration Release "$PROJECT"
           done
 
-      - name: Run benchmark using hyperfine
-        id: benchmark
+      - name: Run benchmark using hyperfine on changed projects
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
