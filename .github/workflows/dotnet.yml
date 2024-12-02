@@ -60,11 +60,25 @@ jobs:
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            $exe_output = "$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)"
-            output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)")
-            echo "$exe_output"
-            echo "$output"
+            EXE_PATH="$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)"
+
+             # Verify if the executable exists
+            if [ ! -f "$EXE_PATH" ]; then
+              echo "No executable found for project: $PROJECT at path $EXE_PATH"
+              continue
+            fi
+
+            echo "Running executable: $EXE_PATH"
+            EXEC_OUTPUT=$("$EXE_PATH")
+            echo "Executable Output: $EXEC_OUTPUT"
+            
+            # Run benchmark using hyperfine
+            output=$(hyperfine --warmup 10 "$EXE_PATH")
             echo "$output" > "$PROJECT/hyperfine_output.txt"
+            
+            # Optionally, display the benchmark output in GitHub Actions log for debugging
+            echo "Hyperfine Benchmark Output:"
+            echo "$output"
           done
 
       - name: Send benchmark results to Discord
