@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using AdventOfCode._2;
+﻿using AdventOfCode._2;
 
 class Program
 {
