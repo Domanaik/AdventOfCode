@@ -60,9 +60,8 @@ jobs:
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            DAY=$(echo "$PROJECT" | cut -d'/' -f2)
-            echo "Day: $DAY"
-            output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/$DAY")
+            output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)")
+            echo "$output"
             echo "$output" > "$PROJECT/hyperfine_output.txt"
           done
 
