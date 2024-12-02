@@ -1,4 +1,4 @@
-namespace AdventOfCode._2
+﻿namespace AdventOfCode._2
 {
     public static class Input
     {
