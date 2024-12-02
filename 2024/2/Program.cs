@@ -1,24 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
+using AdventOfCode._2;
 
 class Program
 {
     static void Main(string[] args)
     {
-        string filePath;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            filePath = "..\\..\\..\\input.txt";
-        }
-        else
-        {
-            filePath = "input.txt";
-        }
+        string inputData = Input.GetInput();
 
-        string[] lines = File.ReadAllLines(filePath);
-        int[][] reports = lines.Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
+        int[][] reports = inputData.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
 
         int safeReports = reports.Count(report => IsSafe(report) || IsSafeable(report));
         Thread.Sleep(8000); // Test if Benchmark is working
