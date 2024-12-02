@@ -6,19 +6,12 @@ class Program
 {
     static void Main(string[] args)
     {
-        try
-        {
-            string[] lines = File.ReadAllLines("D:\\GitHub\\AdventOfCode\\2024\\2\\input.txt");
-            int[][] reports = lines.Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
+        string[] lines = File.ReadAllLines("..\\..\\..\\input.txt");
+        int[][] reports = lines.Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
 
-            int safeReports = reports.Count(report => IsSafe(report) || IsSafeable(report));
-            Thread.Sleep(8000); // Test if Benchmark is working
-            Console.WriteLine(safeReports);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Exception: " + e.Message);
-        }
+        int safeReports = reports.Count(report => IsSafe(report) || IsSafeable(report));
+        Thread.Sleep(8000); // Test if Benchmark is working
+        Console.WriteLine(safeReports);
     }
 
     static bool IsSafe(int[] report)
