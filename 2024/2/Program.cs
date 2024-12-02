@@ -1,12 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 class Program
 {
     static void Main(string[] args)
     {
-        string[] lines = File.ReadAllLines("..\\..\\..\\input.txt");
+        string filePath;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            filePath = "..\\..\\..\\input.txt";
+        }
+        else
+        {
+            filePath = "../../../input.txt";
+        }
+
+        string[] lines = File.ReadAllLines(filePath);
         int[][] reports = lines.Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
 
         int safeReports = reports.Count(report => IsSafe(report) || IsSafeable(report));
