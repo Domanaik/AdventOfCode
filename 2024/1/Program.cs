@@ -10,7 +10,6 @@ class Program
         int[] right = inputData.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[1])).ToArray();
         Array.Sort(left);
         Array.Sort(right);
-        Thread.Sleep(2222);
 
         int totalDistance = left.Zip(right, (l, r) => Math.Abs(l - r)).Sum();
         Console.WriteLine(totalDistance);
