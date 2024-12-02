@@ -52,14 +52,14 @@ jobs:
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
             dotnet restore "$PROJECT"
-            dotnet build --configuration Release "$PROJECT"
+            dotnet publish "$PROJECT" -c Release -r linux-x64 --self-contained true
           done
 
       - name: Run benchmark using hyperfine on changed projects
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            EXE_PATH=$(find "$PROJECT/bin/Release/net9.0/" -type f -executable | head -n 1)
+            EXE_PATH=$(find "$PROJECT/bin/Release/net9.0/linux-x64/publish/" -type f -executable | head -n 1)
             if [ -z "$EXE_PATH" ]; then
               echo "No executable found for project: $PROJECT"
               continue
