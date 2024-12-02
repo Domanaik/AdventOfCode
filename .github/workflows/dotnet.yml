@@ -62,14 +62,7 @@ jobs:
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            EXE_PATH=$(find "$PROJECT/bin/Release/net9.0/linux-x64/publish/${{ steps.detect-changes.outputs.day }}" -type f -executable | head -n 1)
-            echo "executable for $PROJECT : $EXE_PATH"
-            if [ -z "$EXE_PATH" ]; then
-              echo "No executable found for project: $PROJECT"
-              continue
-            fi
-            
-            output=$(hyperfine --warmup 10 "$EXE_PATH")
+            output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/${{ steps.detect-changes.outputs.day }}")
             echo "$output" > "$PROJECT/hyperfine_output.txt"
           done
 
