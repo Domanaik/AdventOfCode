@@ -60,7 +60,7 @@ jobs:
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            $exe_output = $PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)
+            $exe_output = "$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)"
             output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)")
             echo "$exe_output"
             echo "$output"
