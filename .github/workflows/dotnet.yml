@@ -60,6 +60,7 @@ jobs:
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
             EXE_PATH=$(find "$PROJECT/bin/Release/net9.0/linux-x64/publish/" -type f -executable | head -n 1)
+            echo "executable for $PROJECT : $EXE_PATH"
             if [ -z "$EXE_PATH" ]; then
               echo "No executable found for project: $PROJECT"
               continue
