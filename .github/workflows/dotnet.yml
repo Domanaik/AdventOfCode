@@ -45,9 +45,7 @@ jobs:
         run: |
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} HEAD)
           CHANGED_PROJECTS=$(echo "$CHANGED_FILES" | grep -E '^20[0-9]{2}/[0-9]+/' | cut -d'/' -f1,2 | uniq)
-          DAY=$(echo "$DAY" | grep -E '^[0-9]+/' | cut -d'/' -f1,2 | uniq)
           echo "changed_projects=$CHANGED_PROJECTS" >> $GITHUB_OUTPUT
-          echo "day=$DAY" >> $GITHUB_OUTPUT
 
 
       - name: Build changed projects
@@ -62,7 +60,9 @@ jobs:
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/${{ steps.detect-changes.outputs.day }}")
+            DAY=$(echo "$PROJECT" | cut -d'/' -f2)
+            echo "Day: $DAY"
+            output=$(hyperfine --warmup 10 "$PROJECT/bin/Release/net9.0/linux-x64/publish/$DAY")
             echo "$output" > "$PROJECT/hyperfine_output.txt"
           done
 
