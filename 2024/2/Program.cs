@@ -12,7 +12,7 @@ class Program
         int[][] reports = inputData.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
 
         int safeReports = reports.Count(report => IsSafe(report) || IsSafeable(report));
-        Thread.Sleep(8000); // Test if Benchmark is working
+
         Console.WriteLine(safeReports);
     }
 
