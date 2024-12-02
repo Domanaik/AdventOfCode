@@ -14,7 +14,7 @@ class Program
         }
         else
         {
-            filePath = "../../../input.txt";
+            filePath = "input.txt";
         }
 
         string[] lines = File.ReadAllLines(filePath);
