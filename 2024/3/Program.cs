@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.ExceptionServices;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using AdventOfCode._3;
 
 class Program
@@ -34,7 +32,7 @@ class Program
             }
             else if (mulEnabled)
             {
-                var groups = Regex.Match(match.Value, regex_mul).Groups;
+                GroupCollection groups = Regex.Match(match.Value, regex_mul).Groups;
                 int First = int.Parse(groups[1].Value);
                 int Second = int.Parse(groups[2].Value);
                 sum += First * Second;
