@@ -6,7 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string[] inputData = Input.GetInput().Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        string[] inputData = Input.GetInput().Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
         (int, int)[] directons =
         [
