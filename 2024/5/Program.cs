@@ -26,7 +26,9 @@ class Program
                 if (positions.ContainsKey(First) && positions.ContainsKey(Second))
                 {
                     if (positions[First] > positions[Second])
+                    {
                         return false;
+                    }
                 }
             }
             return true;
@@ -34,16 +36,16 @@ class Program
 
         static List<int> TopologicalSort(List<int> update, List<(int First, int Second)> rules)
         {
-            var graph = new Dictionary<int, List<int>>();
-            var inDegree = new Dictionary<int, int>();
+            Dictionary<int, List<int>> graph = [];
+            Dictionary<int, int> inDegree = [];
 
-            foreach (var page in update)
+            foreach (int page in update)
             {
-                graph[page] = new List<int>();
+                graph[page] = [];
                 inDegree[page] = 0;
             }
 
-            foreach (var (First, Second) in rules)
+            foreach ((int First, int Second) in rules)
             {
                 if (graph.ContainsKey(First) && graph.ContainsKey(Second))
                 {
@@ -52,15 +54,15 @@ class Program
                 }
             }
 
-            var queue = new Queue<int>(inDegree.Where(kv => kv.Value == 0).Select(kv => kv.Key));
-            var sorted = new List<int>();
+            Queue<int> queue = new(inDegree.Where(kv => kv.Value == 0).Select(kv => kv.Key));
+            List<int> sorted = [];
 
             while (queue.Count > 0)
             {
-                var current = queue.Dequeue();
+                int current = queue.Dequeue();
                 sorted.Add(current);
 
-                foreach (var neighbor in graph[current])
+                foreach (int neighbor in graph[current])
                 {
                     inDegree[neighbor]--;
                     if (inDegree[neighbor] == 0)
@@ -82,7 +84,7 @@ class Program
             }
             else
             {
-                var correctedUpdate = TopologicalSort(update, rules);
+                List<int> correctedUpdate = TopologicalSort(update, rules);
                 partTwoSum += correctedUpdate[(correctedUpdate.Count - 1) / 2];
             }
         }
