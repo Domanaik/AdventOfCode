@@ -6,8 +6,8 @@ class Program
     {
         string inputData = Input.GetInput();
 
-        int[] left = inputData.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[0])).ToArray();
-        int[] right = inputData.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[1])).ToArray();
+        int[] left = inputData.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[0])).ToArray();
+        int[] right = inputData.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Select(line => int.Parse(line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries)[1])).ToArray();
         Array.Sort(left);
         Array.Sort(right);
 

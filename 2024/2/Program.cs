@@ -6,7 +6,7 @@ class Program
     {
         string inputData = Input.GetInput();
 
-        int[][] reports = inputData.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
+        int[][] reports = inputData.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Select(line => line.Split(' ').Select(int.Parse).ToArray()).ToArray();
 
         int safeReports = reports.Count(report => IsSafe(report) || IsSafeable(report));
 
