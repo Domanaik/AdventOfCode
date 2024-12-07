@@ -43,7 +43,7 @@ class Program
                 {
                     '+' => currentResult + nextNumber,
                     '*' => currentResult * nextNumber,
-                    _ => long.Parse(currentResult.ToString() + nextNumber.ToString())
+                    _ => currentResult * (long)Math.Pow(10, (int)Math.Floor(Math.Log10(nextNumber) + 1)) + nextNumber
                 };
 
                 if (TestIfPossible(result, numbers, index + 1, newResult))
