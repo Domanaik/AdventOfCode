@@ -48,31 +48,29 @@ class Program
             int new_x = guard.x + directions[currentDirection].x;
             int new_y = guard.y + directions[currentDirection].y;
 
-            try
-            {
-                if (map[new_x, new_y] == obstruction)
-                {
-                    currentDirection = (currentDirection + 1) % directions.Length;
-                }
-                else
-                {
-                    if (!visited.Contains((new_x, new_y)))
-                    {
-                        char[,] tempMap = (char[,])map.Clone(); // Danke C# !!
-
-                        tempMap[new_x, new_y] = '#';
-                        if (SimulateGuard(guard, currentDirection, tempMap))
-                        {
-                            counter++;
-                        }
-                    }
-
-                    guard = (new_x, new_y);
-                }
-            }
-            catch (IndexOutOfRangeException)
+            if (new_x < 0 || new_x >= map.GetLength(0) || new_y < 0 || new_y >= map.GetLength(1))
             {
                 break;
+            }
+
+            if (map[new_x, new_y] == obstruction)
+            {
+                currentDirection = (currentDirection + 1) % directions.Length;
+            }
+            else
+            {
+                if (!visited.Contains((new_x, new_y)))
+                {
+                    char[,] tempMap = (char[,])map.Clone(); // Danke C# !!
+
+                    tempMap[new_x, new_y] = '#';
+                    if (SimulateGuard(guard, currentDirection, tempMap))
+                    {
+                        counter++;
+                    }
+                }
+
+                guard = (new_x, new_y);
             }
         }
 
@@ -104,20 +102,18 @@ class Program
             int new_x = guardPosition.x + directions[currentDirection].x;
             int new_y = guardPosition.y + directions[currentDirection].y;
 
-            try
-            {
-                if (map[new_x, new_y] == '#')
-                {
-                    currentDirection = (currentDirection + 1) % directions.Length;
-                }
-                else
-                {
-                    guardPosition = (new_x, new_y);
-                }
-            }
-            catch (IndexOutOfRangeException)
+            if (new_x < 0 || new_x >= map.GetLength(0) || new_y < 0 || new_y >= map.GetLength(1))
             {
                 return false;
+            }
+
+            if (map[new_x, new_y] == '#')
+            {
+                currentDirection = (currentDirection + 1) % directions.Length;
+            }
+            else
+            {
+                guardPosition = (new_x, new_y);
             }
         }
     }
