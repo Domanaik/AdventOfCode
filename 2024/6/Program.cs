@@ -1,4 +1,6 @@
-﻿using AdventOfCode._6;
+﻿// Credits to Korbinski @kojofl
+
+using AdventOfCode._6;
 
 class Program
 {
@@ -24,6 +26,7 @@ class Program
         (int x, int y) guard = (0, 0);
         const char obstruction = '#';
         const string possibleDirections = "^>v<";
+        int counter = 0;
 
         for (int i = 0; i < rows; i++)
         {
@@ -38,30 +41,84 @@ class Program
             }
         }
 
-        try
+        while (true)
         {
-            while (true)
+            visited.Add(guard);
+
+            int new_x = guard.x + directions[currentDirection].x;
+            int new_y = guard.y + directions[currentDirection].y;
+
+            try
             {
-                visited.Add(guard);
-
-                int new_x = guard.x + directions[currentDirection].x;
-                int new_y = guard.y + directions[currentDirection].y;
-
                 if (map[new_x, new_y] == obstruction)
                 {
-                    currentDirection = (currentDirection + 1) % 4;
+                    currentDirection = (currentDirection + 1) % directions.Length;
                 }
                 else
                 {
+                    if (!visited.Contains((new_x, new_y)))
+                    {
+                        char[,] tempMap = (char[,])map.Clone(); // Danke C# !!
+
+                        tempMap[new_x, new_y] = '#';
+                        if (SimulateGuard(guard, currentDirection, tempMap))
+                        {
+                            counter++;
+                        }
+                    }
+
                     guard = (new_x, new_y);
                 }
             }
-        }
-        catch (IndexOutOfRangeException)
-        {
-            // As always, if IndexOutOfRange, just ignore it :-)
+            catch (IndexOutOfRangeException)
+            {
+                break;
+            }
         }
 
         Console.WriteLine(visited.Count);
+        Console.WriteLine(counter);
+    }
+
+    static bool SimulateGuard((int x, int y) guardPosition, int currentDirection, char[,] map)
+    {
+        (int x, int y)[] directions =
+        [
+            (-1,0), // North ^
+            (0,1), // East >
+            (1,0), // South v
+            (0,-1), // West <
+        ];
+
+        HashSet<((int x, int y), int direction)> alreadyVisted = [];
+
+        while (true)
+        {
+            if (alreadyVisted.Contains((guardPosition, currentDirection)))
+            {
+                return true; // Already visted
+            }
+
+            alreadyVisted.Add((guardPosition, currentDirection));
+
+            int new_x = guardPosition.x + directions[currentDirection].x;
+            int new_y = guardPosition.y + directions[currentDirection].y;
+
+            try
+            {
+                if (map[new_x, new_y] == '#')
+                {
+                    currentDirection = (currentDirection + 1) % directions.Length;
+                }
+                else
+                {
+                    guardPosition = (new_x, new_y);
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return false;
+            }
+        }
     }
 }
