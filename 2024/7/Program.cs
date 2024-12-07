@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System.ComponentModel.DataAnnotations;
+using System.IO.Pipelines;
 using System.Threading.Tasks.Dataflow;
 using AdventOfCode._7;
 
@@ -28,6 +29,11 @@ class Program
             if (index == numbers.Length - 1)
             {
                 return currentResult == result;
+            }
+
+            if (currentResult > result)
+            {
+                return false;
             }
 
             foreach (char op in operators)
