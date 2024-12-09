@@ -28,42 +28,66 @@ class Program
 
         Console.WriteLine(string.Join("", blocks.Select(x => x == -1 ? "." : x.ToString())));
 
+        var emptySpaceGroups = new List<List<int>>();
+        List<int> currentEmptySpaceGroup = null;
+
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            if (blocks[i] == -1)
+            {
+                if (currentEmptySpaceGroup == null)
+                {
+                    currentEmptySpaceGroup = new List<int>();
+                }
+                currentEmptySpaceGroup.Add(i);
+            }
+            else
+            {
+                if (currentEmptySpaceGroup != null)
+                {
+                    emptySpaceGroups.Add(currentEmptySpaceGroup);
+                    currentEmptySpaceGroup = null;
+                }
+            }
+        }
+
+        if (currentEmptySpaceGroup != null)
+        {
+            emptySpaceGroups.Add(currentEmptySpaceGroup);
+        }
+
         var digitGroups = blocks
             .AsEnumerable()
-            .Select((value, index) => new { value, index })
+            .Reverse()
+            .Select((value, index) => new { value, index = blocks.Count - 1 - index })
             .Where(x => x.value != -1)
             .GroupBy(x => x.value)
             .Where(g => g.Count() > 0)
             .ToList();
 
+        int emptySpaceIndex = 0;
 
-        for (int i = digitGroups.Count - 1; i >= 0; i--)
+        while (digitGroups.Count > 0)
         {
-            var emptySpaces = blocks
-                .Select((n, i) => new { n, i })
-                .Where(x => x.n == -1)
-                .GroupBy(
-                    x => x.i - blocks.Take(x.i).Count(y => y == -1),
-                    (key, group) => group.Select(g => g.i).ToList()
-                )
-                .ToList();
-
-            var currentGroup = digitGroups[i];
-
-            var targetEmptySpace = emptySpaces
-                .Where(space => space.Count >= currentGroup.Count() && space.First() < currentGroup.First().index)
-                .FirstOrDefault();
-
-            if (targetEmptySpace != null)
+            foreach (var group in digitGroups.ToList())
             {
-                for (int j = 0; j < currentGroup.Count(); j++)
-                {
-                    blocks[targetEmptySpace[j]] = currentGroup.Key;
-                    blocks[currentGroup.ElementAt(j).index] = -1;
-                }
-
-                Console.WriteLine($"{i} of {digitGroups.Count - 1}");
+                // Find the first empty space group that is big enough and to the left
+                Console.WriteLine(emptySpaceIndex);
+                Console.WriteLine(emptySpaceGroups.Count);
+                Console.WriteLine(emptySpaceGroups[emptySpaceIndex].Count);
+                Console.WriteLine(group.Count());
             }
+
+            /*
+            for (int j = 0; j < group.Count(); j++)
+            {
+                blocks[emptySpace[j]] = group.Key;
+                blocks[group.ElementAt(j).index] = -1;
+            }
+            */
+
+            Console.WriteLine(string.Join("", blocks.Select(x => x == -1 ? "." : x.ToString())));
+            break;
         }
 
         long checksum = 0;
