@@ -64,7 +64,7 @@ class Program
         {
             int emptySpaceIndex = 0;
 
-            while (emptySpaceIndex < emptySpaceGroups.Count && (emptySpaceGroups[emptySpaceIndex][0] > group.Min(g => g.index) || emptySpaceGroups[emptySpaceIndex].Count < group.Count()))
+            while (emptySpaceIndex < emptySpaceGroups.Count && (emptySpaceGroups[emptySpaceIndex].Last() > group.First().index || emptySpaceGroups[emptySpaceIndex].Count < group.Count()))
             {
                 emptySpaceIndex++;
             }
