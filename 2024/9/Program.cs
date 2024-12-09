@@ -4,7 +4,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        int[] inputData = Input.GetSample().Select(d => int.Parse(d.ToString())).ToArray();
+        int[] inputData = Input.GetInput().Select(d => int.Parse(d.ToString())).ToArray();
 
         List<int> blocks = [];
 
@@ -26,19 +26,14 @@ class Program
             }
         }
 
-        Console.WriteLine(string.Join("", blocks.Select(x => x == -1 ? "." : x.ToString())));
-
         var emptySpaceGroups = new List<List<int>>();
-        List<int> currentEmptySpaceGroup = null;
+        List<int>? currentEmptySpaceGroup = null;
 
         for (int i = 0; i < blocks.Count; i++)
         {
             if (blocks[i] == -1)
             {
-                if (currentEmptySpaceGroup == null)
-                {
-                    currentEmptySpaceGroup = new List<int>();
-                }
+                currentEmptySpaceGroup ??= [];
                 currentEmptySpaceGroup.Add(i);
             }
             else
@@ -65,29 +60,30 @@ class Program
             .Where(g => g.Count() > 0)
             .ToList();
 
-        int emptySpaceIndex = 0;
-
-        while (digitGroups.Count > 0)
+        foreach (var group in digitGroups.ToList())
         {
-            foreach (var group in digitGroups.ToList())
+            int emptySpaceIndex = 0;
+
+            while (emptySpaceIndex < emptySpaceGroups.Count && (emptySpaceGroups[emptySpaceIndex][0] > group.Min(g => g.index) || emptySpaceGroups[emptySpaceIndex].Count < group.Count()))
             {
-                // Find the first empty space group that is big enough and to the left
-                Console.WriteLine(emptySpaceIndex);
-                Console.WriteLine(emptySpaceGroups.Count);
-                Console.WriteLine(emptySpaceGroups[emptySpaceIndex].Count);
-                Console.WriteLine(group.Count());
+                emptySpaceIndex++;
             }
 
-            /*
-            for (int j = 0; j < group.Count(); j++)
+            if (emptySpaceIndex < emptySpaceGroups.Count)
             {
-                blocks[emptySpace[j]] = group.Key;
-                blocks[group.ElementAt(j).index] = -1;
-            }
-            */
+                for (int j = 0; j < group.Count(); j++)
+                {
+                    blocks[emptySpaceGroups[emptySpaceIndex][j]] = group.Key;
+                    blocks[group.ElementAt(j).index] = -1;
+                }
 
-            Console.WriteLine(string.Join("", blocks.Select(x => x == -1 ? "." : x.ToString())));
-            break;
+                emptySpaceGroups[emptySpaceIndex].RemoveRange(0, group.Count());
+
+                if (emptySpaceGroups[emptySpaceIndex].Count == 0)
+                {
+                    emptySpaceGroups.RemoveAt(emptySpaceIndex);
+                }
+            }
         }
 
         long checksum = 0;
