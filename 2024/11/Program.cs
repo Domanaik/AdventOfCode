@@ -20,7 +20,6 @@ class Program
 
                 foreach (long currentStone in stonesAfterAllBlinks)
                 {
-                    //Console.Write($@" {currentStone}");
                     transformedStones.AddRange(ApplyBlink(currentStone));
                 }
 
@@ -35,6 +34,7 @@ class Program
 
     static List<long> ApplyBlink(long stone)
     {
+        //Console.Write($@" {stone}");
         List<long> newStones = [];
         int numDigits = (int)Math.Floor(Math.Log10(stone) + 1);
 
