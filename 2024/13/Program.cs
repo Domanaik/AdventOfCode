@@ -8,22 +8,17 @@ class Program
     {
         string[] inputData = Input.GetInput().Split(Environment.NewLine + Environment.NewLine);
 
-        int totalTokens = 0;
+        long totalTokens = 0;
 
-        foreach (var block in inputData)
+        foreach (string block in inputData)
         {
-            var lines = block.Split(Environment.NewLine);
+            string[] lines = block.Split(Environment.NewLine);
 
-            var buttonA = ParseCoordinates(lines[0]);
-            var buttonB = ParseCoordinates(lines[1]);
-            var prize = ParseCoordinates(lines[2]);
+            (int X, int Y) buttonA = ParseCoordinates(lines[0]);
+            (int X, int Y) buttonB = ParseCoordinates(lines[1]);
+            (long X, long Y) prize = ParseCoordinates(lines[2]);
 
-            (int? PushesA, int? PushesB, int Cost) = GetBestCombination(buttonA, buttonB, prize);
-
-            if (PushesA.HasValue && PushesB.HasValue)
-            {
-                totalTokens += Cost;
-            }
+            totalTokens += GetCost(buttonA, buttonB, prize);
         }
 
         Console.WriteLine(totalTokens);
@@ -31,47 +26,25 @@ class Program
 
     static (int X, int Y) ParseCoordinates(string line)
     {
-        var parts = line.Split(',');
+        string[] parts = line.Split(',');
         int x = int.Parse(parts[0].Split(['+', '='], StringSplitOptions.RemoveEmptyEntries)[1]);
         int y = int.Parse(parts[1].Split(['+', '='], StringSplitOptions.RemoveEmptyEntries)[1]);
         return (x, y);
     }
 
-    static (int? PushesA, int? PushesB, int Cost) GetBestCombination((int X, int Y) buttonA, (int X, int Y) buttonB, (int X, int Y) prize)
+    static long GetCost((int X, int Y) buttonA, (int X, int Y) buttonB, (long X, long Y) prize)
     {
-        const int maxPresses = 100;
-        const int costA = 3;
-        const int costB = 1;
-        int? bestA = null;
-        int? bestB = null;
-        int minCost = int.MaxValue;
+        prize.X += 10000000000000;
+        prize.Y += 10000000000000;
 
-        for (int a = 0; a <= maxPresses; a++)
+        long b = (buttonA.Y * prize.X - buttonA.X * prize.Y) / (buttonA.Y * buttonB.X - buttonA.X * buttonB.Y);
+        long a = (prize.X - buttonB.X * b) / buttonA.X;
+
+        if (a >= 0 && b >= 0 && (buttonA.X * a + buttonB.X * b == prize.X) && (buttonA.Y * a + buttonB.Y * b == prize.Y))
         {
-            for (int b = 0; b <= maxPresses; b++)
-            {
-                int totalX = a * buttonA.X + b * buttonB.X;
-                int totalY = a * buttonA.Y + b * buttonB.Y;
-
-                if (totalX > prize.X || totalY > prize.Y)
-                {
-                    break;
-                }
-
-                if (totalX == prize.X && totalY == prize.Y)
-                {
-                    int cost = a * costA + b * costB;
-
-                    if (cost < minCost)
-                    {
-                        bestA = a;
-                        bestB = b;
-                        minCost = cost;
-                    }
-                }
-            }
+            return 3 * a + 1 * b;
         }
 
-        return (bestA, bestB, minCost);
+        return 0;
     }
 }
