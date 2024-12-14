@@ -42,11 +42,13 @@ class Program
             }
 
             mapImage.Save($@"robots_{i}.png");
+
+            if (i == 100)
+            {
+                Console.WriteLine(CalculateSafetyFactor(robots, spaceInput));
+            }
         }
 
-        int safetyFactor = CalculateSafetyFactor(robots, spaceInput);
-
-        Console.WriteLine(safetyFactor);
     }
 
     static int CalculateSafetyFactor(List<Robot> robots, (int X, int Y) space)
