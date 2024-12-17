@@ -56,7 +56,7 @@ class Program
 
                 /* The bxl instruction (opcode 1) calculates the bitwise XOR of register B and 
                 the instruction's literal operand, then stores the result in register B. */
-                case 1: // bxl: B ^= literal operand
+                case 1:
                     regB ^= operand;
                     break;
 
