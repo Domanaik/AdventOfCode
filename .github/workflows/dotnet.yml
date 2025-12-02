@@ -9,30 +9,19 @@ on:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Cache .NET
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
-          path: |
-            ~/.dotnet
-            ~/.nuget
-
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0
-
-      - name: Cache hyperfine
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-hyperfine-${{ hashFiles('**/*.csproj') }}
-          path: ~/.cargo/bin
+          cache: true
 
       - name: Setup hyperfine
         run: |
@@ -60,7 +49,7 @@ jobs:
         if: steps.detect-changes.outputs.changed_projects != ''
         run: |
           for PROJECT in ${{ steps.detect-changes.outputs.changed_projects }}; do
-            EXE_PATH="$PROJECT/bin/Release/net9.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)"
+            EXE_PATH="$PROJECT/bin/Release/net10.0/linux-x64/publish/$(echo "$PROJECT" | cut -d'/' -f2)"
 
              # Verify if the executable exists
             if [ ! -f "$EXE_PATH" ]; then
