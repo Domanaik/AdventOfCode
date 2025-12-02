@@ -25,18 +25,16 @@ class Program
             }
             else
             {
-                if (start == 0)
-                    password2--;
-
                 start -= value;
 
                 while (start < 0)
                 {
                     start += 100;
-                    password2++;
+                    
+                    if (start > 0)
+                        password2++;
                 }
             }
-
             if (start == 0)
                 password1++;
         }
