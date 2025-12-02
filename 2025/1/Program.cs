@@ -4,7 +4,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string[] inputData = GetInput().Split(Environment.NewLine);
+        string[] inputData = Input.GetInput().Split(Environment.NewLine);
         int start = 50;
         int password1 = 0;
         int password2 = 0;
