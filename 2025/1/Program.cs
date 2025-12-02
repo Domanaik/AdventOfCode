@@ -19,19 +19,17 @@ class Program
                 while (start >= 100)
                 {
                     start -= 100;
-                    if (start != 0)
+                    if (start > 0)
                         password2++;
                 }
             }
             else
             {
                 start -= value;
-
                 while (start < 0)
                 {
                     start += 100;
-                    
-                    if (start > 0)
+                    if (start >= 0)
                         password2++;
                 }
             }
