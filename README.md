@@ -2,7 +2,7 @@
 
 Leaderboard MMR-Huntaz
 
-* <[https://adventofcode.com/2025/leaderboard/private/view/2390981](https://adventofcode.com/2025/leaderboard/private/view/2390981)>
+* https://adventofcode.com/2025/leaderboard/private/view/2390981
 
 GitHub-Links
 
