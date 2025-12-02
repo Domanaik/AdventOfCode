@@ -9,8 +9,6 @@ on:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    env:
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
