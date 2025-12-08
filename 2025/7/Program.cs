@@ -32,10 +32,8 @@ class Program
                     if (map[y + 1, x] == '^')
                     {
                         beamSplit++;
-                        if (map[y + 1, x - 1] != '|')
-                            map[y + 1, x - 1] = '|';
-                        if (map[y + 1, x + 1] != '|')
-                            map[y + 1, x + 1] = '|';
+                        map[y + 1, x - 1] = '|';
+                        map[y + 1, x + 1] = '|';
                     }
                     else
                     {
